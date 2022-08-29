@@ -14,5 +14,6 @@
             "description": "Words used in the web novel, Super Gene",
             "addWords": true
         },
-    }
+    },
+    "git.ignoreLimitWarning": true
 }
