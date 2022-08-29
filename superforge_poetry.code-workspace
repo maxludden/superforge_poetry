@@ -1,0 +1,22 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"cSpell.words": [
+			"endpage"
+		],
+		"markdown.preview.fontFamily": "'Century Gothic',' MesloLGS NF', 'Ubuntu', sans-serif"
+	},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"scriptType": "python",
+				
+			}
+		]
+	}
+}
