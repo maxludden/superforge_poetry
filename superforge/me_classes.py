@@ -18,6 +18,7 @@ from mongoengine.fields import (
 )
 
 from superforge_poetry.log import log
+
 # custom exceptions
 
 
@@ -31,6 +32,7 @@ class ChapterNotFound(ValueError):
 
 class InvalidChapter(ValueError):
     pass
+
 
 class InvalidPartException(Exception):
     pass
@@ -85,11 +87,11 @@ class Chapter(Document):
     meta = {
         "indexes": ["book", "section", "chapter"],
         "ordering": ["book", "section", "chapter"],
-        "abstract": True
+        "abstract": True,
     }
 
     def generate_section(self):
-        '''
+        """
         Generate the section number for the given chapter.
 
         Raises:
@@ -100,7 +102,7 @@ class Chapter(Document):
         Returns:
             `section` (int):
                 The section for the given chapter.
-        '''
+        """
         if self.section:
             return self.section
         else:
@@ -190,7 +192,7 @@ class Chapter(Document):
                 raise InvalidChapter("Invalid Chapter", f"\nChapter: {chapter}")
 
     def generate_book(self):
-        '''
+        """
         Generate the book number for the given chapter.
 
         Raises:
@@ -201,7 +203,7 @@ class Chapter(Document):
         Returns:
             `book` (int):
                 The book for the given chapter.
-        '''
+        """
         if self.book:
             return self.book
         else:
@@ -251,7 +253,9 @@ class Chapter(Document):
                     self.save()
                     return 10
                 case _:
-                    raise InvalidChapter("Invalid Chapter", f"\nChapter: {self.chapter}")
+                    raise InvalidChapter(
+                        "Invalid Chapter", f"\nChapter: {self.chapter}"
+                    )
 
     def generate_filename(self):
         """Generate the filename for the given chapter."""
@@ -265,7 +269,7 @@ class Chapter(Document):
             return filename
 
     def generate_md_path(self, force: bool = False):
-        '''
+        """
         Generate the path for the given chapters markdown file.
 
         Raises:
@@ -279,7 +283,7 @@ class Chapter(Document):
         Returns:
             `md_path` (str):
                 The path for the given chapters markdown file.
-        '''
+        """
         # book
         if self.book:
             book = self.book
@@ -302,7 +306,7 @@ class Chapter(Document):
         return md_path
 
     def generate_html_path(self, force: bool = False):
-        '''
+        """
         Generate the path for the given chapters html file.
 
         Raises:
@@ -316,7 +320,7 @@ class Chapter(Document):
         Returns:
             `html_path` (str):
                 The path for the given chapters html file.
-        '''
+        """
         # book
         if self.book:
             book = self.book
@@ -338,8 +342,7 @@ class Chapter(Document):
         self.save()
         return html_path
 
-
-
+    # def
 
 
 class chapter_gen:
@@ -350,6 +353,11 @@ class chapter_gen:
         chapters = chapter_gen()
     """
 
+
+class chapter_gen:
+    """
+    Generator for chapter_numbers.
+    """
     def __init__(self, start: int = 1, end: int = 3462):
         self.start = start
         self.end = end
@@ -374,6 +382,9 @@ class chapter_gen:
         else:
             self.chapter_number += 1
             return self.chapter_number
+
+    def __len__(self):
+        return self.end - self.start + 1
 
     def __len__(self):
         return self.end - self.start + 1
