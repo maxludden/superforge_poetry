@@ -6,7 +6,7 @@ This module is a collection of classes for the SuperForge project.
 from pathlib import Path
 from typing import List, Optional, Union
 
-from mongoengine import Document
+from mongoengine import connect, Document, disconnect_all
 from mongoengine.fields import (
     BooleanField,
     DateTimeField,
@@ -16,8 +16,9 @@ from mongoengine.fields import (
     URLField,
     UUIDField,
 )
+from tqdm.auto import tqdm
 
-from superforge_poetry.log import log
+# from superforge_poetry.log import log
 
 # custom exceptions
 
@@ -70,7 +71,6 @@ class Book(Document):
 
 class Chapter(Document):
     """This class contains the chapter content and metadata."""
-
     chapter = IntField(required=True, unique=True)
     section = IntField()
     book = IntField(min_value=1, max_value=10, required=True)
@@ -345,19 +345,12 @@ class Chapter(Document):
     # def
 
 
-class chapter_gen:
-    """
-    Generator to generate chapter numbers for SuperGene.
-
-    Usage:
-        chapters = chapter_gen()
-    """
-
 
 class chapter_gen:
     """
     Generator for chapter_numbers.
     """
+
     def __init__(self, start: int = 1, end: int = 3462):
         self.start = start
         self.end = end
@@ -382,9 +375,6 @@ class chapter_gen:
         else:
             self.chapter_number += 1
             return self.chapter_number
-
-    def __len__(self):
-        return self.end - self.start + 1
 
     def __len__(self):
         return self.end - self.start + 1
@@ -495,3 +485,12 @@ class Titlepage(Document):
     html_path = StringField()
     md = StringField()
     html = StringField()
+
+disconnect_all()
+URI = "mongodb://localhost:27017"
+connect(db="supergene", alias="LOCALDB", host='mongodb://localhost:27017/')
+
+for doc in Chapter.objects():
+    if doc.url:
+        print(doc.url)
+    doc.save()

@@ -13,12 +13,15 @@ from tqdm.auto import tqdm
 
 
 from superforge.me_classes import chapter_gen, Chapter
+from superforge_poetry.atlas import init
 
-load_dotenv()
+load_dotenv("env/.env")
+URI = environ.get("LOCALDB")
+connect("SUPERGENE", host=URI)
 
-chapters = chapter_gen()
-for chapter in chapters:
-    print(chapter)
+chapters = Chapter.objects().to_list()
+
+
 
 # > Read toc files
 toc1_path = Path("json/toc1.json")
@@ -35,8 +38,9 @@ URI = environ.get("LOCALDB")
 connect("SUPERGENE", host=URI)
 
 toc = {}
-for ch in tqdm(chapters, unit='ch', desc='Updating TOC'):
-    doc = Chapter.objects(chapter=ch).first()
+chapters = chapter_gen()
+for x in tqdm(chapters, unit='ch', desc='Updating TOC'):
+    doc = Chapter.objects(chapter=x).first()
     chapter_num = str(doc.chapter)
     title = toc1[chapter_num]["title"]
     if title != doc.title:
