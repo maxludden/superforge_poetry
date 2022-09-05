@@ -272,6 +272,9 @@ class Chapter(Document):
             `InvalidChapter`
                 ValueError: Invalid chapter number.
 
+        Args:
+                `force` (bool):
+                    Force the generation of the path.
 
         Returns:
             `md_path` (str):
@@ -297,6 +300,45 @@ class Chapter(Document):
         self.md_path = md_path
         self.save()
         return md_path
+
+    def generate_html_path(self, force: bool = False):
+        '''
+        Generate the path for the given chapters html file.
+
+        Raises:
+        `InvalidChapter`
+            ValueError: Invalid chapter number.
+
+        Args:
+            `force` (bool):
+                Force the generation of the path.
+
+        Returns:
+            `html_path` (str):
+                The path for the given chapters html file.
+        '''
+        # book
+        if self.book:
+            book = self.book
+        else:
+            book = self.generate_book()
+
+        # filename
+        if self.filename:
+            filename = self.filename
+        else:
+            filename = self.generate_filename()
+
+        # determine the book directory
+        book_zfill = str(book).zfill(2)
+
+        # generate the html_path
+        html_path = f"books/book{book_zfill}/html/{filename}.html"
+        self.html_path = html_path
+        self.save()
+        return html_path
+
+
 
 
 
