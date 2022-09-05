@@ -33,4 +33,5 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [project.scripts]
+name = "get_logger"
 get_logger = "max_logger.main:get_logger"

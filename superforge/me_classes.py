@@ -17,6 +17,7 @@ from mongoengine.fields import (
     UUIDField,
 )
 
+from superforge_poetry.log import log
 # custom exceptions
 
 
@@ -27,6 +28,9 @@ class MMDConversionException(Exception):
 class ChapterNotFound(ValueError):
     pass
 
+
+class InvalidChapter(ValueError):
+    pass
 
 class InvalidPartException(Exception):
     pass
@@ -78,6 +82,222 @@ class Chapter(Document):
     url = URLField()
     unparsed_text = StringField()
     parsed_text = StringField()
+    meta = {
+        "indexes": ["book", "section", "chapter"],
+        "ordering": ["book", "section", "chapter"],
+        "abstract": True
+    }
+
+    def generate_section(self):
+        '''
+        Generate the section number for the given chapter.
+
+        Raises:
+            `InvalidChapter`
+                ValueError: Invalid chapter number.
+
+
+        Returns:
+            `section` (int):
+                The section for the given chapter.
+        '''
+        if self.section:
+            return self.section
+        else:
+            chapter = self.chapter
+            if chapter in range(1, 3463):
+                if chapter <= 424:
+                    self.section = 1
+                    self.save()
+                    return 1
+                elif chapter <= 882:
+                    self.section = 2
+                    self.save()
+                    return 2
+                elif chapter <= 1338:
+                    self.section = 3
+                    self.save()
+                    return 3
+                elif chapter <= 1679:
+                    self.section = 4
+                    self.save()
+                    return 4
+                elif chapter <= 1711:
+                    self.section = 5
+                    self.save()
+                    return 5
+                elif chapter <= 1821:
+                    self.section = 6
+                    self.save()
+                    return 6
+                elif chapter <= 1960:
+                    self.section = 7
+                    self.save()
+                    return 7
+                elif chapter <= 2165:
+                    self.section = 8
+                    self.save()
+                    return 8
+                elif chapter <= 2204:
+                    self.section = 9
+                    self.save()
+                    return 9
+                elif chapter <= 2299:
+                    self.section = 10
+                    self.save()
+                    return 10
+                elif chapter <= 2443:
+                    self.section = 11
+                    self.save()
+                    return 11
+                elif chapter <= 2639:
+                    self.section = 12
+                    self.save()
+                    return 12
+                elif chapter <= 2765:
+                    self.section = 13
+                    self.save()
+                    return 13
+                elif chapter <= 2891:
+                    self.section = 14
+                    self.save()
+                    return 14
+                elif chapter <= 3033:
+                    if chapter == 3095:
+                        log.warning(
+                            f"Chapter {chapter} was inputted to generate_section().\nChapter {chapter} does not exist."
+                        )
+                    elif chapter == 3117:
+                        log.warning(
+                            f"Chapter {chapter} was inputted to generate_section(). \nChapter {chapter} does not exist."
+                        )
+                        pass
+                    else:
+                        self.section = 15
+                        self.save()
+                        return 15
+                elif chapter <= 3303:
+                    self.section = 16
+                    self.save()
+                    return 16
+                elif chapter <= 3462:
+                    self.section = 17
+                    self.save()
+                    return 17
+                else:
+                    raise InvalidChapter("Invalid Chapter", f"\nChapter: {chapter}")
+            else:
+                raise InvalidChapter("Invalid Chapter", f"\nChapter: {chapter}")
+
+    def generate_book(self):
+        '''
+        Generate the book number for the given chapter.
+
+        Raises:
+            `InvalidChapter`
+                ValueError: Invalid chapter number.
+
+
+        Returns:
+            `book` (int):
+                The book for the given chapter.
+        '''
+        if self.book:
+            return self.book
+        else:
+            if self.section:
+                section = self.section
+            else:
+                section = self.generate_section()
+            match section:
+                case 1:
+                    self.book = 1
+                    self.save()
+                    return 1
+                case 2:
+                    self.book = 2
+                    self.save()
+                    return 2
+                case 3:
+                    self.book = 3
+                    self.save()
+                    return 3
+                case 4 | 5:
+                    self.book = 4
+                    self.save()
+                    return 4
+                case 6 | 7:
+                    self.book = 5
+                    self.save()
+                    return 5
+                case 8 | 9:
+                    self.book = 6
+                    self.save()
+                    return 6
+                case 10 | 11:
+                    self.book = 7
+                    self.save()
+                    return 7
+                case 12 | 13:
+                    self.book = 8
+                    self.save()
+                    return 8
+                case 14 | 15:
+                    self.book = 9
+                    self.save()
+                    return 9
+                case 16 | 17:
+                    self.book = 10
+                    self.save()
+                    return 10
+                case _:
+                    raise InvalidChapter("Invalid Chapter", f"\nChapter: {self.chapter}")
+
+    def generate_filename(self):
+        """Generate the filename for the given chapter."""
+        if self.filename:
+            return self.filename
+        else:
+            chapter_str = str(self.chapter).zfill(4)
+            filename = f"chapter_{chapter_str}"
+            self.filename = filename
+            self.save()
+            return filename
+
+    def generate_md_path(self, force: bool = False):
+        '''
+        Generate the path for the given chapters markdown file.
+
+        Raises:
+            `InvalidChapter`
+                ValueError: Invalid chapter number.
+
+
+        Returns:
+            `md_path` (str):
+                The path for the given chapters markdown file.
+        '''
+        # book
+        if self.book:
+            book = self.book
+        else:
+            book = self.generate_book()
+
+        # filename
+        if self.filename:
+            filename = self.filename
+        else:
+            filename = self.generate_filename()
+
+        # determine the book directory
+        book_zfill = str(book).zfill(2)
+
+        # generate the md_path
+        md_path = f"books/book{book_zfill}/md/{filename}.md"
+        self.md_path = md_path
+        self.save()
+        return md_path
+
 
 
 class chapter_gen:
